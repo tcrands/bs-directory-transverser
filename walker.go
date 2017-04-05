@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -18,10 +17,6 @@ func (w *Walker) Walk() {
 	filepath.Walk(w.p, w.fn)
 }
 
-func (w *Walker) WriteToFile(buffer []string, file []byte) {
-	fmt.Println(buffer)
-}
-
 /////////////////////
 // Walking Functions
 /////////////////////
@@ -34,34 +29,34 @@ func NewWalker(p string, fn filepath.WalkFunc) *Walker {
 }
 
 func walkRootPath(extention string) filepath.WalkFunc {
-	fmt.Println(extention)
 	return func(path string, f os.FileInfo, err error) error {
 		if strings.Contains(path, extention) {
 			file, _ := ioutil.ReadFile(path)
 
 			subPaths := getParams(`<!-- SCRIPT-INCLUDE uri="(?P<path>.*?)" -->`, string(file))
 
-			var wg sync.WaitGroup
-			wg.Add(len(subPaths["path"]))
+			if len(subPaths) != 0 {
+				var wg sync.WaitGroup
+				wg.Add(len(subPaths["path"]))
 
-			buffer := []string{}
+				buffer := []string{}
 
-			for i := range subPaths["path"] {
-				go func(i *string) {
-					dereferencedI := *i
-					walker := NewWalker("./"+dereferencedI, walkSubPath(path, &buffer))
-					walker.Walk()
-					wg.Done()
-				}(&subPaths["path"][i])
+				for i := range subPaths["path"] {
+					go func(i *string) {
+						dereferencedI := *i
+						walker := NewWalker("./"+dereferencedI, walkSubPath(path, &buffer))
+						walker.Walk()
+						wg.Done()
+					}(&subPaths["path"][i])
+				}
+
+				wg.Wait()
+
+				splitPoint := getSplitPoint(`<!-- SCRIPT-INCLUDE uri=".*?" -->`, string(file))
+				processedFile := processUpdatedFile(buffer, file, splitPoint)
+
+				ioutil.WriteFile(path, []byte(processedFile), 0644)
 			}
-
-			wg.Wait()
-
-			splitPoint := getSplitPoint(`<!-- SCRIPT-INCLUDE uri=".*?" -->`, string(file))
-			processedFile := processUpdatedFile(buffer, file, splitPoint)
-
-			ioutil.WriteFile(path, []byte(processedFile), 0644)
-
 		}
 		return nil
 	}

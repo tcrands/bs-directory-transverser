@@ -1,16 +1,16 @@
 FROM golang:1.7
 
-RUN mkdir /go-directory-transverser
+RUN mkdir /bs-directory-transverser
 RUN mkdir /source
 
-WORKDIR /go-directory-transverser
+WORKDIR /bs-directory-transverser
 
-ADD . /go-directory-transverser
+ADD . /bs-directory-transverser
 
 RUN go build
 
-RUN cp ./go-directory-transverser /usr/bin
+RUN cp ./bs-directory-transverser /usr/bin
 
 WORKDIR /source
 
-CMD ["go-directory-transverser"]
+CMD ["bs-directory-transverser"]
