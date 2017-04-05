@@ -24,6 +24,6 @@ The script is designed to be run at build.
  
 ```docker push tcrands/bs-directory-transverser``` 
 
-5. To run the image in bash mode run the command:
+5. To run the image in bash mode run the command: (Running the image will pull it from the repo)
 
 ```docker run -v $(pwd):/source -it tcrands/go-directory-transverser /bin/bash```
