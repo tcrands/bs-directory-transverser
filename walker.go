@@ -34,6 +34,7 @@ func NewWalker(p string, fn filepath.WalkFunc) *Walker {
 }
 
 func walkRootPath(extention string) filepath.WalkFunc {
+	fmt.Println(extention)
 	return func(path string, f os.FileInfo, err error) error {
 		if strings.Contains(path, extention) {
 			file, _ := ioutil.ReadFile(path)
