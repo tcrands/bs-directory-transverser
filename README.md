@@ -6,6 +6,9 @@ The script is designed to be run at build.
 
 ## Dev Dependencies
 
+1. GO 1.7 (Installation process: https://nats.io/documentation/tutorials/go-install/)
+2. Docker (Installation process: https://getcarina.com/docs/tutorials/docker-install-mac/)
+
 ## Docker Process 
 
 1. To build a new image run the command:
