@@ -5,7 +5,6 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
-	"sync"
 )
 
 type Walker struct {
@@ -36,21 +35,21 @@ func walkRootPath(extention string) filepath.WalkFunc {
 			subPaths := getParams(`<!-- SCRIPT-INCLUDE uri="(?P<path>.*?)" -->`, string(file))
 
 			if len(subPaths) != 0 {
-				var wg sync.WaitGroup
-				wg.Add(len(subPaths["path"]))
+				// var wg sync.WaitGroup
+				// wg.Add(len(subPaths["path"]))
 
 				buffer := []string{}
 
 				for i := range subPaths["path"] {
-					go func(i *string) {
-						dereferencedI := *i
-						walker := NewWalker("./"+dereferencedI, walkSubPath(path, &buffer))
-						walker.Walk()
-						wg.Done()
-					}(&subPaths["path"][i])
+					// go func(i *string) {
+					// dereferencedI := *i
+					walker := NewWalker("./"+subPaths["path"][i], walkSubPath(path, &buffer))
+					walker.Walk()
+					// wg.Done()
+					// }(&subPaths["path"][i])
 				}
 
-				wg.Wait()
+				// wg.Wait()
 
 				splitPoint := getSplitPoint(`<!-- SCRIPT-INCLUDE uri=".*?" -->`, string(file))
 				processedFile := processUpdatedFile(buffer, file, splitPoint)
